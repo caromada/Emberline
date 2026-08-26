@@ -33,7 +33,7 @@ jobs:
       - run: npm run build
         working-directory: web
         env:
-          BASE_PATH: /emberline
+          BASE_PATH: /Emberline
       - uses: actions/upload-pages-artifact@v3
         with:
           path: web/out
