@@ -104,9 +104,14 @@ def main() -> None:
     ap.add_argument("--backfill", action="store_true",
                     help="run every date present in the input")
     ap.add_argument("--data-dir", default="data")
+    ap.add_argument("--static-window-days", type=int,
+                    help="override the trailing window for the static-source mask"
+                         " (useful for short offline datasets)")
     args = ap.parse_args()
 
     cfg = replace(Config.from_env(), data_dir=args.data_dir)
+    if args.static_window_days:
+        cfg = replace(cfg, static_window_days=args.static_window_days)
     df = load_detections(cfg, args.input_csv)
     if df.empty:
         raise SystemExit("no detections returned")
