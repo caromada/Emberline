@@ -8,7 +8,7 @@
 
 Official wildfire perimeters lag by hours to days because someone has to draw them. Emberline draws them automatically: it ingests VIIRS 375 m thermal detections from NASA FIRMS, clusters them into fires, fits concave-hull perimeters, tracks each fire's identity from day to day, and computes how fast every fire is growing and which direction it's moving. A toggle overlays the official NIFC perimeter next to Emberline's so you can judge the method against ground truth on any fire.
 
-**Live map:** _link pending deploy_
+**Live map:** `https://<your-username>.github.io/emberline/` _(after first Pages deploy)_
 
 ## What it shows
 
@@ -71,10 +71,10 @@ cd web && npm install && npm run dev        # http://localhost:3000
 ## Going live
 
 1. Get a free FIRMS map key: https://firms.modaps.eosdis.nasa.gov/api/area/
-2. Add repo secrets: `FIRMS_MAP_KEY` (required), `DATABASE_URL` (optional PostGIS mirror — the schema is in `pipeline/schema.sql`)
-3. Enable the `ingest` workflow — it runs every 3 h, commits refreshed `data/`, and rescored validation
-4. Deploy `web/` to Vercel (root directory `web`); the build copies `data/` into the static bundle
-5. Wipe the demo data first: `rm -rf data && git commit`
+2. Add a repo secret `FIRMS_MAP_KEY` (and optionally `DATABASE_URL` for the PostGIS mirror — schema in `pipeline/schema.sql`)
+3. In repo **Settings → Pages**, set the source to **GitHub Actions**
+4. The `deploy` workflow publishes `web/` to GitHub Pages on every push; the `ingest` workflow runs every 3 h, commits refreshed `data/`, and re-triggers the deploy
+5. To replace the demo dataset with real detections: `rm -rf data`, commit, and run the `ingest` workflow once manually
 
 ## Repository layout
 
