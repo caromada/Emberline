@@ -4,10 +4,10 @@
   --bone: #f2e8c9;
   --accent: #7fb6c9;
   --ember: #fe9f6d;
-  --bone-dim: rgba(242, 232, 201, 0.55);
-  --bone-faint: rgba(242, 232, 201, 0.32);
-  --hairline: rgba(242, 232, 201, 0.12);
-  --panel: rgba(21, 28, 45, 0.88);
+  --bone-dim: rgba(242, 232, 201, 0.68);
+  --bone-faint: rgba(242, 232, 201, 0.45);
+  --hairline: rgba(242, 232, 201, 0.18);
+  --panel: rgba(13, 18, 30, 0.93);
   --panel-solid: #151c2d;
 }
 
@@ -24,7 +24,7 @@ body {
   color: var(--bone);
   font-family: var(--font-body), system-ui, sans-serif;
   overflow: hidden;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 ::selection {
@@ -43,7 +43,7 @@ body {
 
 .microlabel {
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--bone-faint);
@@ -98,6 +98,37 @@ body {
   left: 20px;
   z-index: 20;
   pointer-events: none;
+  background: var(--panel);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--hairline);
+  padding: 14px 18px 12px;
+  width: 252px;
+}
+
+.stats-strip {
+  margin-top: 12px;
+  padding-top: 11px;
+  border-top: 1px solid var(--hairline);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stats-strip > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.stats-strip .v {
+  font-family: var(--font-mono), monospace;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-strip .v.grow {
+  color: var(--ember);
 }
 
 .wordmark {
@@ -119,7 +150,7 @@ body {
 .masthead .stamp {
   margin-top: 3px;
   font-family: var(--font-mono), monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.08em;
   color: var(--bone-dim);
 }
@@ -128,9 +159,11 @@ body {
 
 .fire-list {
   position: absolute;
-  top: 108px;
+  top: 226px;
   left: 20px;
   z-index: 20;
+  max-height: calc(100vh - 330px);
+  overflow-y: auto;
   width: 252px;
   background: var(--panel);
   backdrop-filter: blur(10px);
@@ -177,13 +210,13 @@ body {
 .fire-row .fid {
   font-family: var(--font-display), sans-serif;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 16px;
   letter-spacing: 0.06em;
 }
 
 .fire-row .area {
   font-family: var(--font-mono), monospace;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--bone-dim);
 }
 
@@ -192,7 +225,7 @@ body {
   display: flex;
   gap: 10px;
   font-family: var(--font-mono), monospace;
-  font-size: 10.5px;
+  font-size: 11.5px;
   color: var(--bone-faint);
 }
 
@@ -287,14 +320,14 @@ body {
 .headline .delta {
   margin-top: 8px;
   font-family: var(--font-mono), monospace;
-  font-size: 12.5px;
+  font-size: 13.5px;
   color: var(--ember);
 }
 
 .headline .moving {
   margin-top: 3px;
   font-family: var(--font-mono), monospace;
-  font-size: 12.5px;
+  font-size: 13.5px;
   color: var(--bone-dim);
 }
 
@@ -319,7 +352,7 @@ body {
 
 .meta-grid .v {
   font-family: var(--font-mono), monospace;
-  font-size: 12.5px;
+  font-size: 13.5px;
   margin-top: 3px;
 }
 
@@ -370,7 +403,7 @@ body {
   display: flex;
   justify-content: space-between;
   font-family: var(--font-mono), monospace;
-  font-size: 10px;
+  font-size: 10.5px;
   letter-spacing: 0.06em;
   color: var(--bone-faint);
 }
@@ -492,6 +525,31 @@ input[type="range"].scrub:focus-visible::-webkit-slider-thumb {
   color: var(--bone-faint);
 }
 
+/* ---------- source chip (bottom left) ---------- */
+
+.src-chip {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  z-index: 20;
+  background: var(--panel);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--hairline);
+  color: var(--bone-dim);
+  text-decoration: none;
+  font-family: var(--font-mono), monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 9px 13px;
+  transition: color 120ms ease-out, border-color 120ms ease-out;
+}
+
+.src-chip:hover {
+  color: var(--bone);
+  border-color: rgba(242, 232, 201, 0.4);
+}
+
 /* ---------- loading ---------- */
 
 .boot {
@@ -514,9 +572,20 @@ input[type="range"].scrub:focus-visible::-webkit-slider-thumb {
 
 /* ---------- responsive ---------- */
 
+@media (max-width: 1180px) {
+  .map-controls {
+    bottom: 108px;
+  }
+}
+
 @media (max-width: 880px) {
-  .fire-list {
+  .fire-list,
+  .src-chip,
+  .stats-strip {
     display: none;
+  }
+  .masthead {
+    width: auto;
   }
   .fire-panel {
     width: min(300px, calc(100vw - 40px));

@@ -8,8 +8,34 @@ import { arrowPolygon, roughKm } from "@/lib/arrows";
 import { frpColor, hexToRGB, palette } from "@/lib/palette";
 import type { FeatureCollection, FireProps } from "@/lib/types";
 
-const BASEMAP =
-  "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json";
+// Natural-earth look: satellite imagery (fits a satellite-derived product)
+// with a translucent place-label layer on top. Both keyless.
+const BASEMAP: maplibregl.StyleSpecification = {
+  version: 8,
+  sources: {
+    imagery: {
+      type: "raster",
+      tiles: [
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      ],
+      tileSize: 256,
+      maxzoom: 19,
+      attribution: "Imagery © Esri, Maxar, Earthstar Geographics",
+    },
+    labels: {
+      type: "raster",
+      tiles: [
+        "https://basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}@2x.png",
+      ],
+      tileSize: 256,
+      attribution: "Labels © CARTO © OpenStreetMap contributors",
+    },
+  },
+  layers: [
+    { id: "imagery", type: "raster", source: "imagery" },
+    { id: "labels", type: "raster", source: "labels", paint: { "raster-opacity": 0.92 } },
+  ],
+};
 
 const ACCENT = hexToRGB(palette.accent);
 const EMBER = hexToRGB(palette.ember);
@@ -29,47 +55,6 @@ interface Props {
 interface Arrow {
   fireId: string;
   polygon: [number, number][];
-}
-
-// Recolor the third-party basemap into the project palette. Dark-matter draws
-// land as the background and water as fills, so: land = slate, water = space
-// navy, boundaries = bone hairlines, everything else near-invisible.
-function restyle(map: maplibregl.Map) {
-  const style = map.getStyle();
-  if (!style.layers) return;
-  for (const layer of style.layers) {
-    const id = layer.id;
-    try {
-      if (layer.type === "background") {
-        map.setPaintProperty(id, "background-color", palette.slate);
-      } else if (layer.type === "fill") {
-        const isWater = /water|ocean/i.test(id);
-        map.setPaintProperty(
-          id,
-          "fill-color",
-          isWater ? palette.space : "#202A41"
-        );
-        map.setPaintProperty(id, "fill-outline-color", "rgba(0,0,0,0)");
-        map.setPaintProperty(id, "fill-opacity", isWater ? 1 : 0.5);
-      } else if (layer.type === "line") {
-        const isBoundary = /boundary|admin/i.test(id);
-        const isWater = /water|river/i.test(id);
-        map.setPaintProperty(
-          id,
-          "line-color",
-          isBoundary
-            ? "rgba(242,232,201,0.15)"
-            : isWater
-              ? "rgba(11,16,32,0.8)"
-              : "rgba(242,232,201,0.04)"
-        );
-      } else if (layer.type === "symbol") {
-        map.setLayoutProperty(id, "visibility", "none");
-      }
-    } catch {
-      // some layers reject individual paint props; skip them
-    }
-  }
 }
 
 function dataBounds(fc: FeatureCollection): [[number, number], [number, number]] | null {
@@ -114,7 +99,6 @@ export default function FireMap({
       zoom: 6.4,
       attributionControl: { compact: true },
     });
-    map.on("style.load", () => restyle(map));
     map.on("error", (e) => console.error("maplibre:", e.error?.message ?? e));
     map.on("load", () => {
       setMapReady(true);
@@ -172,9 +156,9 @@ export default function FireMap({
             data: nifc as unknown as GeoJSON.FeatureCollection,
             stroked: true,
             filled: true,
-            getFillColor: [...BONE, 10] as [number, number, number, number],
-            getLineColor: [...BONE, 110] as [number, number, number, number],
-            getLineWidth: 1.4,
+            getFillColor: [...BONE, 22] as [number, number, number, number],
+            getLineColor: [255, 255, 255, 170] as [number, number, number, number],
+            getLineWidth: 1.6,
             lineWidthUnits: "pixels" as const,
             transitions: { getLineColor: 240, getFillColor: 240 },
           })
@@ -204,7 +188,7 @@ export default function FireMap({
                     210,
                   ] as [number, number, number, number]),
             getLineWidth: (f: { properties: FireProps }) =>
-              f.properties.fire_id === selected ? 2.4 : 1.4,
+              f.properties.fire_id === selected ? 2.8 : 1.8,
             lineWidthUnits: "pixels" as const,
             onClick: (info: { object?: { properties: FireProps } }) => {
               onSelect(info.object ? info.object.properties.fire_id : null);
@@ -246,7 +230,33 @@ export default function FireMap({
       layers,
       getCursor: ({ isHovering }: { isHovering: boolean }) =>
         isHovering ? "pointer" : "grab",
-    });
+      getTooltip: ({ object }: { object?: { properties: FireProps } }) => {
+        const p = object?.properties;
+        if (!p?.fire_id) return null;
+        const rows = [
+          `<div style="font-weight:700;font-size:13px;letter-spacing:.06em">${p.fire_id}</div>`,
+          `<div>${Math.round(p.area_ha).toLocaleString("en-US")} ha</div>`,
+          p.growth_24h_ha != null
+            ? `<div style="color:#FE9F6D">${p.growth_24h_ha >= 0 ? "+" : ""}${Math.round(p.growth_24h_ha).toLocaleString("en-US")} ha / 24h</div>`
+            : "",
+          p.direction && p.speed_km_day != null
+            ? `<div>moving ${p.direction} at ${p.speed_km_day.toFixed(1)} km/day</div>`
+            : "",
+        ].join("");
+        return {
+          html: rows,
+          style: {
+            backgroundColor: "rgba(13,18,30,0.95)",
+            color: "#F2E8C9",
+            border: "1px solid rgba(242,232,201,0.25)",
+            padding: "9px 12px",
+            fontFamily: "ui-monospace, SFMono-Regular, monospace",
+            fontSize: "11.5px",
+            lineHeight: "1.55",
+          },
+        };
+      },
+    } as Parameters<MapboxOverlay["setProps"]>[0]);
   }, [perimeters, detections, nifc, showNifc, selected, arrows, mapReady, onSelect]);
 
   // fly to the selected fire
