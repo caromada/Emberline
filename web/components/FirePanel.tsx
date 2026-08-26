@@ -96,6 +96,18 @@ export default function FirePanel({ fire, onClose }: Props) {
               <div className="microlabel">Detections</div>
               <div className="v">{f.n_detections}</div>
             </div>
+            <div>
+              <div className="microlabel">Days tracked</div>
+              <div className="v">{f.history.length}</div>
+            </div>
+            <div>
+              <div className="microlabel">Bearing</div>
+              <div className="v">
+                {f.bearing_deg != null
+                  ? `${Math.round(f.bearing_deg)}° ${f.direction ?? ""}`
+                  : "n/a"}
+              </div>
+            </div>
             <div style={{ gridColumn: "1 / -1" }}>
               <div className="microlabel">Centroid</div>
               <div className="v">

@@ -67,6 +67,27 @@ export default function Page() {
 
   const updated = data?.index.updated_at?.replace("T", " ").replace("+00:00", "Z");
 
+  const stats = useMemo(() => {
+    if (!firesOnDate.length) return null;
+    const area = firesOnDate.reduce((s, f) => s + f.area_ha, 0);
+    const growth = firesOnDate.reduce(
+      (s, f) => s + Math.max(f.growth_24h_ha ?? 0, 0),
+      0
+    );
+    const fastest = firesOnDate.reduce(
+      (best, f) =>
+        (f.speed_km_day ?? 0) > (best?.speed_km_day ?? 0) ? f : best,
+      null as FireProps | null
+    );
+    return {
+      count: firesOnDate.length,
+      area,
+      growth,
+      detections: detections?.features.length ?? 0,
+      fastest,
+    };
+  }, [firesOnDate, detections]);
+
   return (
     <main className="shell">
       <div className={`map-root${mapReady && data ? " ready" : ""}`}>
@@ -94,6 +115,34 @@ export default function Page() {
         </div>
         <div className="sub microlabel">live wildfire perimeter telemetry</div>
         {updated && <div className="stamp">updated {updated}</div>}
+        {stats && (
+          <div className="stats-strip">
+            <div>
+              <span className="microlabel">fires</span>
+              <span className="v">{stats.count}</span>
+            </div>
+            <div>
+              <span className="microlabel">burning</span>
+              <span className="v">{Math.round(stats.area).toLocaleString("en-US")} ha</span>
+            </div>
+            <div>
+              <span className="microlabel">24h growth</span>
+              <span className="v grow">+{Math.round(stats.growth).toLocaleString("en-US")} ha</span>
+            </div>
+            <div>
+              <span className="microlabel">detections</span>
+              <span className="v">{stats.detections}</span>
+            </div>
+            {stats.fastest?.speed_km_day != null && stats.fastest.speed_km_day >= 0.5 && (
+              <div>
+                <span className="microlabel">fastest mover</span>
+                <span className="v">
+                  {stats.fastest.fire_id} · {stats.fastest.speed_km_day.toFixed(1)} km/d {stats.fastest.direction}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
       </header>
 
       {firesOnDate.length > 0 && (
@@ -124,6 +173,15 @@ export default function Page() {
       {dates.length > 0 && (
         <TimeSlider dates={dates} index={idx} onChange={handleDate} />
       )}
+
+      <a
+        className="src-chip"
+        href="https://github.com/caromada/Emberline"
+        target="_blank"
+        rel="noreferrer"
+      >
+        VIIRS 375m thermal · DBSCAN + concave hulls · refreshed every 3h · source ↗
+      </a>
     </main>
   );
 }
