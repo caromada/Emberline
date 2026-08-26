@@ -1,12 +1,14 @@
 """Synthesize a FIRMS-format CSV for local development (no API key needed).
 
-Three fires with distinct life stories + a static industrial source:
-  A: ignites day 1 near Redding, grows NNE ~2 km/day, develops two arms
+A plausible eight-day West Coast fire season + a static industrial source:
+  A: ignites day 1 near Redding CA, grows NNE ~1 km/day, develops two arms
   B: ignites day 4 in the Sierra foothills, fast circular growth
-  C1/C2: neighbors from day 3 that merge on day 6
-  S: gas-flare stand-in, the same pixels hot every single day (the static-source
-     mask exists for exactly this signature; kept in the demo to show the
-     raw point layer)
+  C1/C2: Klamath neighbors from day 3 that merge around day 6
+  D: WA Cascades, ignites day 2, walks steadily east
+  E: central Oregon, ignites day 1, slow and steady
+  F: Ventura County CA, ignites day 6, wind-driven, races west
+  S: Kern County gas-flare stand-in, the same pixels hot every single day
+     (the static-source mask exists for exactly this signature)
 """
 import numpy as np
 import pandas as pd
@@ -41,11 +43,21 @@ for i, day in enumerate(DAYS):
     if i >= 3:
         blob(39.30 + (i - 3) * 0.004, -120.85, 0.004 + (i - 3) * 0.005,
              8 + (i - 3) * 12, day, 22)
-    # C pair from day 3, converging until they merge around day 6
+    # C pair from day 3: two tight neighbors converging until DBSCAN sees one
     if i >= 2:
-        gap = max(0.030 - (i - 2) * 0.009, 0.004)
-        blob(41.05, -123.30 - gap / 2, 0.004 + (i - 2) * 0.003, 6 + (i - 2) * 5, day, 9)
-        blob(41.05, -123.30 + gap / 2, 0.004 + (i - 2) * 0.003, 6 + (i - 2) * 5, day, 9)
+        gap = max(0.036 - (i - 2) * 0.011, 0.004)
+        blob(41.05, -123.30 - gap / 2, 0.0035 + (i - 2) * 0.0012, 9 + (i - 2) * 6, day, 9)
+        blob(41.05, -123.30 + gap / 2, 0.0035 + (i - 2) * 0.0012, 9 + (i - 2) * 6, day, 9)
+    # Fire D: Washington Cascades from day 2, walking east
+    if i >= 1:
+        blob(47.62, -120.72 + (i - 1) * 0.012, 0.007 + (i - 1) * 0.0025,
+             12 + (i - 1) * 9, day, 12)
+    # Fire E: central Oregon from day 1, slow and steady
+    blob(43.76 + i * 0.003, -121.42, 0.006 + i * 0.0015, 10 + i * 5, day, 8)
+    # Fire F: Ventura County from day 6, wind-driven toward the coast
+    if i >= 5:
+        blob(34.56, -118.92 - (i - 5) * 0.022, 0.006 + (i - 5) * 0.006,
+             14 + (i - 5) * 18, day, 30)
     # Static source: same 3 pixels every single day
     for d_ in (0.0, 0.003, -0.003):
         emit(35.42 + d_, -119.05, day, 4.0)
