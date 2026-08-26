@@ -1,0 +1,8 @@
+pandas>=2.0
+numpy>=1.26
+shapely>=2.1
+scikit-learn>=1.4
+pyproj>=3.6
+requests>=2.31
+pytest>=8.0
+psycopg[binary]>=3.1
