@@ -20,9 +20,9 @@ Official wildfire perimeters lag by hours to days because someone has to draw th
 
 ## Accuracy vs. official perimeters
 
-The pipeline snapshots WFIGS perimeters on every run and scores itself (IoU and signed area error per fire, matched by intersection-over-union in an equal-area projection). The current table lives in [`data/validation.md`](data/validation.md) and is refreshed by the ingest workflow.
+The pipeline snapshots WFIGS perimeters on every run and scores itself: each fire's cumulative footprint (union of its whole perimeter history, in an equal-area projection) is matched to the overlapping official perimeter by IoU, and the per-fire table with signed area errors lands in [`data/validation.md`](data/validation.md), refreshed every ingest.
 
-> The repo currently ships with a synthetic demo dataset so the frontend runs with zero setup. The accuracy table becomes meaningful after the first real FIRMS ingest (see **Going live** below).
+Current numbers from live data: **median absolute area error of ~40% against official perimeters for fires ≥ 1,000 ha**, with well-observed fires much tighter (Three Queens +2%, Deer Creek +3%); the exact figure refreshes with every ingest in [`data/validation.md`](data/validation.md). Two known biases dominate the tail, and both are physics rather than bugs: below ~1,000 ha the 375 m sensor footprint inflates small burns, and fires that were already burning before the tracking window opened have unobserved history and read low. The hull concavity parameter was tuned by sweeping it against these official perimeters: ratio 0.25 scores 40% median error, while a near-convex 0.7 scores 48%.
 
 ## Architecture
 
@@ -51,7 +51,7 @@ GitHub Actions cron (every 3 h)
 
 ## What was hard
 
-**Convex hulls are wrong, and everyone uses them anyway.** A fire burning up two canyon arms produces a convex hull that swallows the unburned ridge between them. On a two-armed test cluster, the concave hull comes in at ~27 % of the convex hull's area — the convex version overstates the fire by nearly 4×. Emberline uses `shapely.concave_hull` with the ratio parameter held in one config constant, tuned against official perimeters, plus a half-pixel (187.5 m) buffer so point samples become detection footprints. One found edge case: perfectly collinear detections degenerate the Delaunay triangulation the hull is built on — real detections are never collinear, but the tests now cover it.
+**Convex hulls are wrong, and everyone uses them anyway.** A fire burning up two canyon arms produces a convex hull that swallows the unburned ridge between them. On a two-armed test cluster, the concave hull comes in at ~27 % of the convex hull's area — the convex version overstates the fire by nearly 4×. The concavity parameter was then tuned against real official perimeters: sweeping it over n=20 NIFC fires ≥ 1,000 ha, the tightest setting (0.25) scores 40 % median area error while a near-convex setting (0.7) scores 48 % — the same direction the geometry predicts. A half-pixel (187.5 m) buffer turns point samples into detection footprints. One found edge case: perfectly collinear detections degenerate the Delaunay triangulation the hull is built on — real detections are never collinear, but the tests cover it anyway.
 
 **Cluster identity across time.** DBSCAN labels mean nothing from one run to the next, but "this fire grew 780 ha" requires knowing today's cluster 7 is yesterday's cluster 4. Emberline matches perimeters by intersection-over-union with greedy 1:1 assignment, then handles the messy cases explicitly: two fires that merge collapse into the **older** ID with a recorded merge event; a fire hidden by a day of cloud cover matches again for up to 3 days before its ID retires; a small fast-moving day-one fire can legitimately fail its IoU match — that shows up as an ID break, which is the honest failure mode.
 
@@ -59,7 +59,7 @@ GitHub Actions cron (every 3 h)
 
 ## Run it locally
 
-Zero credentials needed — a synthetic 8-day fire season ships with the repo:
+The repo ships with live data (refreshed every 3 h by the ingest workflow), and the frontend needs zero credentials. Without a FIRMS key you can still exercise the whole pipeline offline — `make demo` synthesizes an 8-day fire season and runs it through every stage:
 
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -r pipeline/requirements.txt
@@ -68,13 +68,12 @@ cd .. && make demo                          # regenerate demo data
 cd web && npm install && npm run dev        # http://localhost:3000
 ```
 
-## Going live
+## Deploy your own
 
 1. Get a free FIRMS map key: https://firms.modaps.eosdis.nasa.gov/api/area/
 2. Add a repo secret `FIRMS_MAP_KEY` (and optionally `DATABASE_URL` for the PostGIS mirror — schema in `pipeline/schema.sql`)
 3. In repo **Settings → Pages**, set the source to **GitHub Actions**
-4. The `deploy` workflow publishes `web/` to GitHub Pages on every push; the `ingest` workflow runs every 3 h, commits refreshed `data/`, and re-triggers the deploy
-5. To replace the demo dataset with real detections: `rm -rf data`, commit, and run the `ingest` workflow once manually
+4. The `deploy` workflow publishes `web/` to GitHub Pages on every push; the `ingest` workflow runs every 3 h, fetches the latest detections, commits refreshed `data/`, and re-triggers the deploy
 
 ## Repository layout
 

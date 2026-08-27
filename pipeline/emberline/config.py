@@ -13,7 +13,9 @@ class Config:
     day_range: int = 2                 # days of FIRMS history per fetch
     eps_m: float = 1500.0              # DBSCAN neighborhood (meters, EPSG:5070)
     min_samples: int = 3
-    hull_ratio: float = 0.35           # shapely concave_hull ratio (tuned vs NIFC)
+    hull_ratio: float = 0.25           # concave_hull ratio; swept 0.25-0.7 against
+                                       # n=20 NIFC perimeters >=1000 ha: 0.25 -> 40%
+                                       # median area error, 0.7 (near-convex) -> 48%
     pixel_buffer_m: float = 187.5      # half a 375 m VIIRS pixel
     iou_threshold: float = 0.10        # min IoU to call two perimeters the same fire
     max_gap_days: int = 3              # cloud-cover tolerance before a fire ID retires

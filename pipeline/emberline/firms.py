@@ -26,9 +26,15 @@ def parse_firms_csv(text: str) -> pd.DataFrame:
 def fetch_detections(key, sources, bbox, day_range, date=None, timeout=120) -> pd.DataFrame:
     frames = []
     for source in sources:
-        resp = requests.get(area_url(key, source, bbox, day_range, date), timeout=timeout)
-        resp.raise_for_status()
-        frames.append(parse_firms_csv(resp.text))
+        # NRT archives only reach back a few days and the API 400s past that;
+        # fall back to shorter windows per source rather than failing the run
+        for dr in [d for d in (day_range, 5, 3, 2) if d <= day_range]:
+            resp = requests.get(area_url(key, source, bbox, dr, date), timeout=timeout)
+            if resp.status_code == 400 and dr > 2:
+                continue
+            resp.raise_for_status()
+            frames.append(parse_firms_csv(resp.text))
+            break
     frames = [f for f in frames if not f.empty]
     if not frames:
         return pd.DataFrame()
