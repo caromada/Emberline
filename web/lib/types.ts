@@ -2,6 +2,7 @@ export interface FireProps {
   fire_id: string;
   date: string;
   area_ha: number;
+  cumulative_ha?: number;
   frp_sum: number;
   n_detections: number;
   first_seen: string;

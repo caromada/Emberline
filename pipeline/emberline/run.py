@@ -3,7 +3,9 @@ import argparse
 from dataclasses import replace
 
 import pandas as pd
+import shapely
 from shapely.geometry import Point, shape
+from shapely.ops import unary_union
 
 from .clustering import cluster_detections
 from .config import Config
@@ -35,9 +37,17 @@ def run_for_date(cfg: Config, day: str, detections: pd.DataFrame) -> None:
         return
 
     df = add_projected(df)
-    mask = build_static_mask(add_projected(drop_low_confidence(history)),
-                             cfg.static_window_days, cfg.static_day_fraction,
-                             cfg.cell_size_m)
+    # mask history = committed daily snapshots + the current fetch frame, so
+    # the trailing window grows toward the full 90 days as the cron accumulates
+    stored = store.load_detection_history(cfg.static_window_days)
+    frame = drop_low_confidence(history)[["longitude", "latitude", "acq_date"]]
+    mask_input = add_projected(pd.concat([stored, frame], ignore_index=True))
+    window = min(cfg.static_window_days, int(mask_input["acq_date"].nunique()))
+    # persistence is meaningless over a couple of days — every active fire
+    # would qualify; only mask once the window has some depth
+    mask = (build_static_mask(mask_input, window, cfg.static_day_fraction,
+                              cfg.cell_size_m)
+            if window >= 5 else set())
     df = drop_static_sources(df, mask, cfg.cell_size_m)
     df = cluster_detections(df, cfg.eps_m, cfg.min_samples)
     if df.empty:
@@ -66,7 +76,10 @@ def run_for_date(cfg: Config, day: str, detections: pd.DataFrame) -> None:
         growth = compute_growth(hist)
         rec = next(r for r in result.records if r.fire_id == fid)
         lon, lat = to_lonlat_xy(*p["centroid_xy"])
+        footprint = shapely.make_valid(
+            unary_union([shape(h["geom"]) for h in hist]))
         props = {"fire_id": fid, "date": day, "area_ha": round(p["area_ha"], 1),
+                 "cumulative_ha": round(footprint.area / 10_000.0, 1),
                  "frp_sum": round(p["frp_sum"], 1), "n_detections": p["n_detections"],
                  "first_seen": rec.first_seen, "last_seen": rec.last_seen,
                  "centroid": [round(lon, 5), round(lat, 5)],

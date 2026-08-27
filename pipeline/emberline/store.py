@@ -22,6 +22,28 @@ class LocalStore:
         (self.root / "detections").mkdir(parents=True, exist_ok=True)
         (self.root / "nifc").mkdir(parents=True, exist_ok=True)
 
+    def load_detection_history(self, max_days: int) -> "pd.DataFrame":
+        """Detections from committed daily snapshots, newest max_days files.
+
+        Feeds the static-source mask, which improves as the cron accumulates
+        history. Snapshots are post-mask, so a masked cell stops accruing new
+        detections and can briefly unmask when the window rolls past its stored
+        days — it re-masks within a day, which is acceptable drift.
+        """
+        import json as _json
+
+        import pandas as pd
+
+        files = sorted((self.root / "detections").glob("*.geojson"))[-max_days:]
+        rows = []
+        for path in files:
+            fc = _json.loads(path.read_text())
+            day = path.stem
+            for f in fc["features"]:
+                lon, lat = f["geometry"]["coordinates"]
+                rows.append((lon, lat, day))
+        return pd.DataFrame(rows, columns=["longitude", "latitude", "acq_date"])
+
     def load_state(self) -> dict:
         p = self.root / "state.json"
         if p.exists():

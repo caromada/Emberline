@@ -39,6 +39,7 @@ def test_three_day_run(tmp_path):
     assert fire["fire_id"] == "F0001"
     assert fire["first_seen"] == "2026-08-20" and fire["last_seen"] == "2026-08-22"
     assert fire["area_ha"] > 0 and fire["growth_24h_ha"] > 0
+    assert fire["cumulative_ha"] >= fire["area_ha"]  # union of history covers today
     assert len(fire["history"]) == 3 and len(fire["track"]) == 3
 
     perim = json.loads((data / "perimeters" / "2026-08-22.geojson").read_text())
