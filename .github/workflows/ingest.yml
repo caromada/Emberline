@@ -28,7 +28,7 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           cd pipeline
-          python -m emberline.run --data-dir ../data
+          python -m emberline.run --data-dir ../data --day-range 5 --static-window-days 5
           python scripts/validate_nifc.py --data-dir ../data || true
           python -c "from emberline.db import sync; sync('../data')"
       - name: Commit refreshed data

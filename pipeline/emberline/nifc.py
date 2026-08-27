@@ -17,8 +17,15 @@ def fetch_current_perimeters(bbox: str, timeout: int = 120) -> dict:
         "spatialRel": "esriSpatialRelIntersects",
         "outFields": "poly_IncidentName,poly_GISAcres,poly_DateCurrent",
         "outSR": 4326,
+        "geometryPrecision": 5,
         "f": "geojson",
     }
-    resp = requests.get(WFIGS_URL, params=params, timeout=timeout)
-    resp.raise_for_status()
-    return resp.json()
+    last_err: Exception | None = None
+    for _ in range(3):  # the service occasionally truncates large responses
+        resp = requests.get(WFIGS_URL, params=params, timeout=timeout)
+        resp.raise_for_status()
+        try:
+            return resp.json()
+        except ValueError as err:
+            last_err = err
+    raise last_err

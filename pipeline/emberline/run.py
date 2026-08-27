@@ -107,11 +107,15 @@ def main() -> None:
     ap.add_argument("--static-window-days", type=int,
                     help="override the trailing window for the static-source mask"
                          " (useful for short offline datasets)")
+    ap.add_argument("--day-range", type=int,
+                    help="days of FIRMS history to fetch per run (max 10)")
     args = ap.parse_args()
 
     cfg = replace(Config.from_env(), data_dir=args.data_dir)
     if args.static_window_days:
         cfg = replace(cfg, static_window_days=args.static_window_days)
+    if args.day_range:
+        cfg = replace(cfg, day_range=min(args.day_range, 10))
     df = load_detections(cfg, args.input_csv)
     if df.empty:
         raise SystemExit("no detections returned")
