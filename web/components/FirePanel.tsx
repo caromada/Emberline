@@ -4,6 +4,7 @@ import type { FireProps } from "@/lib/types";
 
 interface Props {
   fire: FireProps | null;
+  name: string | null;
   onClose: () => void;
 }
 
@@ -36,7 +37,7 @@ function Sparkline({ history }: { history: { date: string; area_ha: number }[] }
   );
 }
 
-export default function FirePanel({ fire, onClose }: Props) {
+export default function FirePanel({ fire, name, onClose }: Props) {
   const f = fire;
   return (
     <section className={`fire-panel${f ? " open" : ""}`} aria-hidden={!f}>
@@ -44,9 +45,11 @@ export default function FirePanel({ fire, onClose }: Props) {
         <>
           <div className="head">
             <div>
-              <div className="fid display">{f.fire_id}</div>
+              <div className="fid display">
+                {(name ?? f.fire_id).toUpperCase()}
+              </div>
               <div className="microlabel" style={{ marginTop: 4 }}>
-                observed {f.date}
+                {name ? `${f.fire_id} · ` : ""}observed {f.date}
               </div>
             </div>
             <button className="close" onClick={onClose} aria-label="Close panel">
@@ -68,6 +71,11 @@ export default function FirePanel({ fire, onClose }: Props) {
             {f.direction && f.speed_km_day != null && (
               <div className="moving">
                 moving {f.direction} at {f.speed_km_day.toFixed(1)} km/day
+              </div>
+            )}
+            {f.cumulative_ha != null && f.cumulative_ha > f.area_ha * 1.02 && (
+              <div className="moving">
+                {fmtInt(f.cumulative_ha)} ha burned to date
               </div>
             )}
           </div>

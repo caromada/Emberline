@@ -212,6 +212,10 @@ body {
   font-weight: 600;
   font-size: 16px;
   letter-spacing: 0.06em;
+  max-width: 156px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .fire-row .area {
@@ -278,8 +282,10 @@ body {
 .fire-panel .head .fid {
   font-family: var(--font-display), sans-serif;
   font-weight: 700;
-  font-size: 24px;
-  letter-spacing: 0.08em;
+  font-size: 22px;
+  letter-spacing: 0.06em;
+  line-height: 1.15;
+  overflow-wrap: break-word;
 }
 
 .fire-panel .close {
@@ -579,19 +585,51 @@ input[type="range"].scrub:focus-visible::-webkit-slider-thumb {
 }
 
 @media (max-width: 880px) {
-  .fire-list,
   .src-chip,
-  .stats-strip {
+  .stats-strip,
+  .legend {
     display: none;
   }
   .masthead {
     width: auto;
   }
-  .fire-panel {
-    width: min(300px, calc(100vw - 40px));
+  /* fire list becomes a horizontal strip of cards above the time bar */
+  .fire-list {
     top: auto;
-    max-height: 46vh;
-    bottom: 96px;
+    bottom: 88px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-height: none;
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .fire-list header {
+    display: none;
+  }
+  .fire-row {
+    flex: none;
+    width: 164px;
+    border-left: none;
+    border-top: 2px solid transparent;
+  }
+  .fire-row.selected {
+    border-top-color: var(--accent);
+  }
+  .map-controls {
+    bottom: 176px;
+  }
+  .fire-panel {
+    width: min(300px, calc(100vw - 24px));
+    top: auto;
+    right: 12px;
+    max-height: 42vh;
+    bottom: 176px;
+  }
+  .time-bar {
+    bottom: 12px;
+    width: calc(100vw - 24px);
   }
 }
 

@@ -75,6 +75,7 @@ def main():
         footprints.append((fid, geom, first_seen))
 
     rows = []
+    names: dict[str, str] = {}
     for g, official in theirs_5070:
         ob = official.bounds
         mine_parts = [
@@ -93,9 +94,14 @@ def main():
         err = (mine.area - official.area) / official.area * 100
         ids = "+".join(fid for fid, _, _ in mine_parts[:3])
         earliest = min(first for _, _, first in mine_parts)
-        rows.append((ids, g["properties"].get("poly_IncidentName", "?"),
+        incident = g["properties"].get("poly_IncidentName", "?")
+        rows.append((ids, incident,
                      mine.area / 10_000, official.area / 10_000, iou, err,
                      earliest))
+        if incident and incident != "?":
+            for fid, _, _ in mine_parts:
+                names[fid] = incident
+    (root / "names.json").write_text(json.dumps(names, separators=(",", ":")))
     rows = sorted(rows, key=lambda r: -r[3])
     errors = [abs(r[5]) for r in rows]
 

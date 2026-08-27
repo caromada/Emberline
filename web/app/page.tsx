@@ -1,6 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import FireList from "@/components/FireList";
 import FirePanel from "@/components/FirePanel";
 import TimeSlider from "@/components/TimeSlider";
@@ -19,6 +19,31 @@ export default function Page() {
   const dates = data?.index.dates ?? [];
   const idx = dateIdx ?? Math.max(dates.length - 1, 0);
   const date = dates[idx];
+  const names = data?.names ?? {};
+
+  // shareable URLs: ?fire=F0165&date=2026-08-25
+  const urlApplied = useRef(false);
+  useEffect(() => {
+    if (!data || urlApplied.current) return;
+    urlApplied.current = true;
+    const sp = new URLSearchParams(window.location.search);
+    const d = sp.get("date");
+    if (d) {
+      const i = data.index.dates.indexOf(d);
+      if (i >= 0) setDateIdx(i);
+    }
+    const f = sp.get("fire");
+    if (f) setSelected(f);
+  }, [data]);
+
+  useEffect(() => {
+    if (!data || !urlApplied.current) return;
+    const sp = new URLSearchParams();
+    if (dateIdx !== null) sp.set("date", dates[dateIdx]);
+    if (selected) sp.set("fire", selected);
+    const q = sp.toString();
+    window.history.replaceState(null, "", q ? `?${q}` : window.location.pathname);
+  }, [data, dateIdx, selected, dates]);
 
   // keyboard scrub
   useEffect(() => {
@@ -33,6 +58,17 @@ export default function Page() {
 
   const perimeters = date ? data?.perimeters[date] ?? null : null;
   const detections = date ? data?.detections[date] ?? null : null;
+
+  // everything burned up to the scrubbed date, for the cumulative wash layer
+  const footprint = useMemo(() => {
+    if (!data || !dates.length) return null;
+    return {
+      type: "FeatureCollection" as const,
+      features: dates
+        .slice(0, idx + 1)
+        .flatMap((d) => data.perimeters[d]?.features ?? []),
+    };
+  }, [data, dates, idx]);
 
   // fires visible on the scrubbed date, largest first, for the rail
   const firesOnDate: FireProps[] = useMemo(() => {
@@ -94,10 +130,12 @@ export default function Page() {
         <FireMap
           perimeters={perimeters}
           detections={detections}
+          footprint={footprint}
           nifc={data?.nifc ?? null}
           showNifc={showNifc}
           selected={selected}
           focus={focus}
+          names={names}
           onSelect={handleSelect}
           onReady={handleReady}
         />
@@ -137,7 +175,7 @@ export default function Page() {
               <div>
                 <span className="microlabel">fastest mover</span>
                 <span className="v">
-                  {stats.fastest.fire_id} · {stats.fastest.speed_km_day.toFixed(1)} km/d {stats.fastest.direction}
+                  {(names[stats.fastest.fire_id] ?? stats.fastest.fire_id).toUpperCase()} · {stats.fastest.speed_km_day.toFixed(1)} km/d {stats.fastest.direction}
                 </span>
               </div>
             )}
@@ -146,10 +184,19 @@ export default function Page() {
       </header>
 
       {firesOnDate.length > 0 && (
-        <FireList fires={firesOnDate} selected={selected} onSelect={handleSelect} />
+        <FireList
+          fires={firesOnDate}
+          names={names}
+          selected={selected}
+          onSelect={handleSelect}
+        />
       )}
 
-      <FirePanel fire={selectedFire} onClose={() => setSelected(null)} />
+      <FirePanel
+        fire={selectedFire}
+        name={selectedFire ? names[selectedFire.fire_id] ?? null : null}
+        onClose={() => setSelected(null)}
+      />
 
       <div className="map-controls">
         <button

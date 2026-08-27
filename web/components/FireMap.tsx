@@ -44,10 +44,12 @@ const BONE = hexToRGB(palette.bone);
 interface Props {
   perimeters: FeatureCollection | null;
   detections: FeatureCollection | null;
+  footprint: FeatureCollection | null; // all perimeters up to the scrubbed date
   nifc: FeatureCollection | null;
   showNifc: boolean;
   selected: string | null;
   focus: [number, number] | null;
+  names: Record<string, string>;
   onSelect: (fireId: string | null) => void;
   onReady: () => void;
 }
@@ -77,10 +79,12 @@ function dataBounds(fc: FeatureCollection): [[number, number], [number, number]]
 export default function FireMap({
   perimeters,
   detections,
+  footprint,
   nifc,
   showNifc,
   selected,
   focus,
+  names,
   onSelect,
   onReady,
 }: Props) {
@@ -150,6 +154,18 @@ export default function FireMap({
     if (!overlay || !mapReady) return;
 
     const layers = [
+      // cumulative burned footprint: everything up to the scrubbed date as a
+      // dim wash under the bright active front, so scrubbing shows the burn
+      // growing outward instead of blobs jumping around
+      footprint
+        ? new GeoJsonLayer({
+            id: "footprint",
+            data: footprint as unknown as GeoJSON.FeatureCollection,
+            stroked: false,
+            filled: true,
+            getFillColor: [254, 159, 109, 26] as [number, number, number, number],
+          })
+        : null,
       showNifc && nifc
         ? new GeoJsonLayer({
             id: "nifc",
@@ -233,8 +249,11 @@ export default function FireMap({
       getTooltip: ({ object }: { object?: { properties: FireProps } }) => {
         const p = object?.properties;
         if (!p?.fire_id) return null;
+        const title = names[p.fire_id]
+          ? `${names[p.fire_id].toUpperCase()} <span style="opacity:.55">${p.fire_id}</span>`
+          : p.fire_id;
         const rows = [
-          `<div style="font-weight:700;font-size:13px;letter-spacing:.06em">${p.fire_id}</div>`,
+          `<div style="font-weight:700;font-size:13px;letter-spacing:.06em">${title}</div>`,
           `<div>${Math.round(p.area_ha).toLocaleString("en-US")} ha</div>`,
           p.growth_24h_ha != null
             ? `<div style="color:#FE9F6D">${p.growth_24h_ha >= 0 ? "+" : ""}${Math.round(p.growth_24h_ha).toLocaleString("en-US")} ha / 24h</div>`
@@ -257,7 +276,7 @@ export default function FireMap({
         };
       },
     } as Parameters<MapboxOverlay["setProps"]>[0]);
-  }, [perimeters, detections, nifc, showNifc, selected, arrows, mapReady, onSelect]);
+  }, [perimeters, detections, footprint, nifc, showNifc, selected, arrows, mapReady, names, onSelect]);
 
   // fly to the selected fire
   useEffect(() => {

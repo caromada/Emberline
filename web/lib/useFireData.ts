@@ -21,6 +21,7 @@ export interface FireData {
   perimeters: Record<string, FeatureCollection>;
   detections: Record<string, FeatureCollection>;
   nifc: FeatureCollection | null;
+  names: Record<string, string>;
 }
 
 // Loads the whole (small) dataset up front so the time scrub never waits on IO.
@@ -45,8 +46,13 @@ export function useFireData(): FireData | null {
         })
       );
       const last = index.dates[index.dates.length - 1];
-      const nifc = await getJson<FeatureCollection>(`nifc/${last}.geojson`);
-      if (live) setData({ index, fires, perimeters: per, detections: det, nifc });
+      const [nifc, names] = await Promise.all([
+        getJson<FeatureCollection>(`nifc/${last}.geojson`),
+        getJson<Record<string, string>>("names.json"),
+      ]);
+      if (live)
+        setData({ index, fires, perimeters: per, detections: det, nifc,
+                  names: names ?? {} });
     })();
     return () => {
       live = false;

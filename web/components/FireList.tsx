@@ -3,6 +3,7 @@ import type { FireProps } from "@/lib/types";
 
 interface Props {
   fires: FireProps[];
+  names: Record<string, string>;
   selected: string | null;
   onSelect: (fireId: string | null) => void;
 }
@@ -10,7 +11,7 @@ interface Props {
 const fmtHa = (v: number) =>
   v >= 1000 ? `${(v / 1000).toFixed(1)}k` : `${Math.round(v)}`;
 
-export default function FireList({ fires, selected, onSelect }: Props) {
+export default function FireList({ fires, names, selected, onSelect }: Props) {
   return (
     <aside className="fire-list">
       <header>
@@ -24,7 +25,9 @@ export default function FireList({ fires, selected, onSelect }: Props) {
           onClick={() => onSelect(f.fire_id === selected ? null : f.fire_id)}
         >
           <span className="line1">
-            <span className="fid display">{f.fire_id}</span>
+            <span className="fid display">
+              {(names[f.fire_id] ?? f.fire_id).toUpperCase()}
+            </span>
             <span className="area">{fmtHa(f.area_ha)} ha</span>
           </span>
           <span className="line2">

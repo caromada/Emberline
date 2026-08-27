@@ -1,5 +1,7 @@
 # Emberline
 
+![tests](https://github.com/caromada/Emberline/actions/workflows/test.yml/badge.svg) ![ingest](https://github.com/caromada/Emberline/actions/workflows/ingest.yml/badge.svg)
+
 **Live wildfire perimeter tracking derived from raw satellite thermal detections — updated every 3 hours, no humans in the loop.**
 
 ### 🔥 [Open the live map → caromada.github.io/Emberline](https://caromada.github.io/Emberline/)
@@ -17,8 +19,9 @@ Official wildfire perimeters lag by hours to days because someone has to draw th
 - **Perimeters** — concave hulls over clustered detections, one polygon per fire per day
 - **Growth** — `4,210 ha, +780 ha in 24 h` per fire, from day-over-day perimeter area
 - **Spread vectors** — a tapered arrow from each fire's historical centroid to its current one; length encodes km/day
-- **Time slider** — scrub the fire's whole history; perimeters and arrows update in place
-- **Official comparison** — NIFC/WFIGS interagency perimeters as a fade-in overlay
+- **Time slider** — scrub the fire's whole history; the cumulative burned footprint grows under the active front
+- **Official comparison** — NIFC/WFIGS interagency perimeters as a fade-in overlay, with matched incident names shown on Emberline's fires
+- **Shareable state** — `?fire=F0165&date=2026-08-25` deep-links to a specific fire and day
 
 ## Accuracy vs. official perimeters
 
