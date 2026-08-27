@@ -2,13 +2,15 @@
 
 **Live wildfire perimeter tracking derived from raw satellite thermal detections — updated every 3 hours, no humans in the loop.**
 
+### 🔥 [Open the live map → caromada.github.io/Emberline](https://caromada.github.io/Emberline/)
+
 <!-- hero: 12s GIF of the time scrub goes here
 ![Emberline time scrub](docs/media/scrub.gif)
 -->
 
 Official wildfire perimeters lag by hours to days because someone has to draw them. Emberline draws them automatically: it ingests VIIRS 375 m thermal detections from NASA FIRMS, clusters them into fires, fits concave-hull perimeters, tracks each fire's identity from day to day, and computes how fast every fire is growing and which direction it's moving. A toggle overlays the official NIFC perimeter next to Emberline's so you can judge the method against ground truth on any fire.
 
-**Live map:** `https://<your-username>.github.io/emberline/` _(after first Pages deploy)_
+**Live map:** https://caromada.github.io/Emberline/
 
 ## What it shows
 
