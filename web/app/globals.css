@@ -578,6 +578,12 @@ input[type="range"].scrub:focus-visible::-webkit-slider-thumb {
 
 /* ---------- responsive ---------- */
 
+@media (max-width: 1600px) {
+  .src-chip {
+    bottom: 104px;
+  }
+}
+
 @media (max-width: 1180px) {
   .map-controls {
     bottom: 108px;
