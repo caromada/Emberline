@@ -147,6 +147,7 @@ export default function Page() {
         </div>
       )}
 
+      <div className="left-rail">
       <header className="masthead">
         <div className="wordmark">
           EMBERLINE<span className="tick">_</span>
@@ -181,6 +182,14 @@ export default function Page() {
             )}
           </div>
         )}
+        <a
+          className="src-chip"
+          href="https://github.com/caromada/Emberline"
+          target="_blank"
+          rel="noreferrer"
+        >
+          VIIRS 375m thermal · DBSCAN + concave hulls · refreshed every 3h · source ↗
+        </a>
       </header>
 
       {firesOnDate.length > 0 && (
@@ -191,6 +200,7 @@ export default function Page() {
           onSelect={handleSelect}
         />
       )}
+      </div>
 
       <FirePanel
         fire={selectedFire}
@@ -220,15 +230,6 @@ export default function Page() {
       {dates.length > 0 && (
         <TimeSlider dates={dates} index={idx} onChange={handleDate} />
       )}
-
-      <a
-        className="src-chip"
-        href="https://github.com/caromada/Emberline"
-        target="_blank"
-        rel="noreferrer"
-      >
-        VIIRS 375m thermal · DBSCAN + concave hulls · refreshed every 3h · source ↗
-      </a>
     </main>
   );
 }
