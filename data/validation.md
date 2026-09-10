@@ -1,12 +1,9 @@
 | ours | NIFC incident | our ha | NIFC ha | IoU | area err |
 |---|---|---:|---:|---:|---:|
-| F1060 | Sisi | 965 | 1119 | 0.49 | -14% |
-| F2412 | Moonshine | 1051 | 1077 | 0.67 | -2% |
-| F2504 | MEERS | 207 | 370 | 0.43 | -44% |
-| F2624 | Steele | 78 | 18 | 0.23 | +332% |
+| F2412 | Moonshine | 1415 | 1399 | 0.55 | +1% |
 
-**Median |area error|: 29%** (n=4)
+**Median |area error|: 1%** (n=1)
 
-**Fires ≥ 1,000 ha: median |area error| 8%** (n=2) · below that, a 375 m sensor footprint dominates the area of small burns
+**Fires ≥ 1,000 ha: median |area error| 1%** (n=1) · below that, a 375 m sensor footprint dominates the area of small burns
 
-**Fires whose ignition falls inside the data window: median |area error| 29%** (n=4) · fires already burning when tracking began have unobserved history and read low by construction
+**Fires whose ignition falls inside the data window: median |area error| 1%** (n=1) · fires already burning when tracking began have unobserved history and read low by construction
