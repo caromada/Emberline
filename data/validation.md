@@ -1,7 +1,7 @@
 | ours | NIFC incident | our ha | NIFC ha | IoU | area err |
 |---|---|---:|---:|---:|---:|
 | F3391 | Sisi | 757 | 1553 | 0.24 | -51% |
-| F3397 | Dome | 2378 | 1078 | 0.45 | +121% |
+| F3397 | Dome | 2378 | 1079 | 0.45 | +120% |
 
 **Median |area error|: 86%** (n=2)
 
