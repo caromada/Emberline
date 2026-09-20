@@ -1,10 +1,10 @@
 | ours | NIFC incident | our ha | NIFC ha | IoU | area err |
 |---|---|---:|---:|---:|---:|
-| F3391 | Sisi | 757 | 1553 | 0.24 | -51% |
-| F3397 | Dome | 2378 | 1079 | 0.45 | +120% |
+| F3391 | Sisi | 786 | 1553 | 0.24 | -49% |
+| F3397 | Dome | 2378 | 1231 | 0.52 | +93% |
 
-**Median |area error|: 86%** (n=2)
+**Median |area error|: 71%** (n=2)
 
-**Fires ≥ 1,000 ha: median |area error| 86%** (n=2) · below that, a 375 m sensor footprint dominates the area of small burns
+**Fires ≥ 1,000 ha: median |area error| 71%** (n=2) · below that, a 375 m sensor footprint dominates the area of small burns
 
-**Fires whose ignition falls inside the data window: median |area error| 86%** (n=2) · fires already burning when tracking began have unobserved history and read low by construction
+**Fires whose ignition falls inside the data window: median |area error| 71%** (n=2) · fires already burning when tracking began have unobserved history and read low by construction
