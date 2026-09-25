@@ -1,12 +1,9 @@
 | ours | NIFC incident | our ha | NIFC ha | IoU | area err |
 |---|---|---:|---:|---:|---:|
-| F4354+F3391 | Sisi | 1000 | 1730 | 0.33 | -42% |
-| F3397 | Dome | 3019 | 1673 | 0.55 | +80% |
-| F4126 | Marmot Peak | 117 | 30 | 0.26 | +292% |
-| F4430 | Ranger Academy Burn 1 RX | 25 | 8 | 0.09 | +208% |
+| F3397 | Dome | 3053 | 1671 | 0.55 | +83% |
 
-**Median |area error|: 144%** (n=4)
+**Median |area error|: 83%** (n=1)
 
-**Fires ≥ 1,000 ha: median |area error| 61%** (n=2) · below that, a 375 m sensor footprint dominates the area of small burns
+**Fires ≥ 1,000 ha: median |area error| 83%** (n=1) · below that, a 375 m sensor footprint dominates the area of small burns
 
-**Fires whose ignition falls inside the data window: median |area error| 144%** (n=4) · fires already burning when tracking began have unobserved history and read low by construction
+**Fires whose ignition falls inside the data window: median |area error| 83%** (n=1) · fires already burning when tracking began have unobserved history and read low by construction
