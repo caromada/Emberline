@@ -1,6 +1,6 @@
 | ours | NIFC incident | our ha | NIFC ha | IoU | area err |
 |---|---|---:|---:|---:|---:|
-| F3397 | Dome | 3053 | 1671 | 0.55 | +83% |
+| F3397 | Dome | 3050 | 1671 | 0.55 | +83% |
 
 **Median |area error|: 83%** (n=1)
 
