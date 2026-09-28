@@ -28,6 +28,87 @@ def to_5070(geom):
     return shapely.make_valid(shp_transform(_FWD.transform, shapely.make_valid(geom)))
 
 
+SEASON_DAYS = 120
+
+
+def update_season(root: pathlib.Path, day: str, rows: list) -> dict:
+    """Upsert today's per-incident scores into a season-to-date record.
+
+    A fire is only scoreable while it is still burning, so a table of today's
+    matches shrinks toward nothing as the season winds down. Each incident is
+    scored at its most completely observed moment: the comparison where our
+    tracked footprint was largest. Later comparisons tend to see only a remnant
+    after a detection gap retires the fire's IDs, which measures tracking
+    continuity rather than perimeter accuracy. The selection uses only our own
+    area, never agreement with the official shape, so it cannot cherry-pick.
+    """
+    from datetime import date as _date
+
+    path = root / "validation_history.json"
+    season = json.loads(path.read_text()) if path.exists() else {}
+    for ids, incident, our_ha, nifc_ha, iou, err, _first in rows:
+        prev = season.get(incident)
+        if incident and incident != "?" and (prev is None or our_ha >= prev["our_ha"]):
+            season[incident] = {"ids": ids, "our_ha": round(our_ha, 1),
+                                "nifc_ha": round(nifc_ha, 1), "iou": round(iou, 3),
+                                "err": round(err, 1), "date": day}
+    today = _date.fromisoformat(day)
+    season = {k: v for k, v in season.items()
+              if (today - _date.fromisoformat(v["date"])).days <= SEASON_DAYS}
+    path.write_text(json.dumps(season, indent=1, sort_keys=True))
+    return season
+
+
+def render(season: dict) -> list[str]:
+    rows = sorted(season.items(), key=lambda kv: -kv[1]["nifc_ha"])
+    lines = [f"Season to date (last {SEASON_DAYS} days): each incident scored at its most completely"
+             " observed moment, the comparison where Emberline's tracked footprint was largest.",
+             "",
+             "| NIFC incident | Emberline fire IDs | our ha | NIFC ha | IoU | area err | measured |",
+             "|---|---|---:|---:|---:|---:|---|"]
+    for name, r in rows:
+        lines.append(f"| {name} | {r['ids']} | {r['our_ha']:.0f} | {r['nifc_ha']:.0f}"
+                     f" | {r['iou']:.2f} | {r['err']:+.0f}% | {r['date']} |")
+    errors = [abs(r["err"]) for _, r in rows]
+    large = [abs(r["err"]) for _, r in rows if r["nifc_ha"] >= 1000]
+    if not errors:
+        return lines + ["", "No overlapping official perimeters recorded yet."]
+    lines.append(f"\n**Median |area error|, all incidents: {statistics.median(errors):.0f}%** (n={len(errors)})")
+    if large:
+        lines.append(f"\n**Incidents ≥ 1,000 ha: median |area error| {statistics.median(large):.0f}%**"
+                     f" (n={len(large)}) · below that, the 375 m sensor footprint dominates"
+                     f" the area of small burns")
+    return lines
+
+
+def write_compare_layer(root: pathlib.Path, day: str, features: list[dict]) -> None:
+    """Snapshot the official perimeters for the map's NIFC toggle.
+
+    Only perimeters that touch one of our fires are kept (the full CONUS layer
+    is ~20 MB), simplified to ~50 m, and only the latest snapshot is retained:
+    the frontend never reads older ones and each copy would live in git forever.
+    """
+    import shapely
+    from shapely.geometry import mapping
+
+    slim = []
+    for g in features:
+        geom = shapely.make_valid(shape(g["geometry"])).simplify(
+            0.0005, preserve_topology=True)
+        geom = shapely.set_precision(geom, 1e-5)
+        if geom.is_empty:
+            continue
+        slim.append({"type": "Feature", "geometry": mapping(geom),
+                     "properties": {"name": g["properties"].get("poly_IncidentName")}})
+    out_dir = root / "nifc"
+    out_dir.mkdir(exist_ok=True)
+    for old in out_dir.glob("*.geojson"):
+        old.unlink()
+    (out_dir / f"{day}.geojson").write_text(
+        json.dumps({"type": "FeatureCollection", "features": slim},
+                   separators=(",", ":")))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data-dir", default="data")
@@ -47,8 +128,6 @@ def main():
     bbox = (f"{extent[0] - pad},{extent[1] - pad},"
             f"{extent[2] + pad},{extent[3] + pad}")
     nifc = fetch_current_perimeters(bbox)
-    (root / "nifc").mkdir(exist_ok=True)
-    (root / "nifc" / f"{dates[-1]}.geojson").write_text(json.dumps(nifc))
 
     theirs_5070 = [(g, to_5070(shape(g["geometry"]))) for g in nifc["features"]]
 
@@ -76,6 +155,7 @@ def main():
 
     rows = []
     names: dict[str, str] = {}
+    compare_layer = []
     for g, official in theirs_5070:
         ob = official.bounds
         mine_parts = [
@@ -86,6 +166,7 @@ def main():
         ]
         if not mine_parts:
             continue
+        compare_layer.append(g)
         mine = shapely.make_valid(unary_union([geom for _, geom, _ in mine_parts]))
         inter = mine.intersection(official).area
         iou = inter / mine.union(official).area if inter else 0.0
@@ -102,34 +183,9 @@ def main():
             for fid, _, _ in mine_parts:
                 names[fid] = incident
     (root / "names.json").write_text(json.dumps(names, separators=(",", ":")))
-    rows = sorted(rows, key=lambda r: -r[3])
-    errors = [abs(r[5]) for r in rows]
-
-    lines = ["| ours | NIFC incident | our ha | NIFC ha | IoU | area err |",
-             "|---|---|---:|---:|---:|---:|"]
-    for r in rows:
-        lines.append(f"| {r[0]} | {r[1]} | {r[2]:.0f} | {r[3]:.0f} | {r[4]:.2f} | {r[5]:+.0f}% |")
-    if errors:
-        large = [abs(r[5]) for r in rows if r[3] >= 1000]
-        # a fire already burning when our data window opened has most of its
-        # footprint unobserved; only fires whose ignition we watched are a
-        # fair test of the perimeter method
-        first_day = dates[0]
-        observed = [abs(r[5]) for r in rows if r[6] > first_day]
-        lines.append(f"\n**Median |area error|: {statistics.median(errors):.0f}%** (n={len(errors)})")
-        if large:
-            lines.append(
-                f"\n**Fires ≥ 1,000 ha: median |area error| {statistics.median(large):.0f}%**"
-                f" (n={len(large)}) · below that, a 375 m sensor footprint dominates"
-                f" the area of small burns")
-        if observed:
-            lines.append(
-                f"\n**Fires whose ignition falls inside the data window:"
-                f" median |area error| {statistics.median(observed):.0f}%**"
-                f" (n={len(observed)}) · fires already burning when tracking began"
-                f" have unobserved history and read low by construction")
-    else:
-        lines.append("\nNo overlapping official perimeters found for this date.")
+    write_compare_layer(root, dates[-1], compare_layer)
+    season = update_season(root, dates[-1], rows)
+    lines = render(season)
     out = "\n".join(lines)
     (root / "validation.md").write_text(out + "\n")
     print(out)

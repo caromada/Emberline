@@ -25,9 +25,14 @@ Official wildfire perimeters lag by hours to days because someone has to draw th
 
 ## Accuracy vs. official perimeters
 
-The pipeline snapshots WFIGS perimeters on every run and scores itself: each fire's cumulative footprint (union of its whole perimeter history, in an equal-area projection) is matched to the overlapping official perimeter by IoU, and the per-fire table with signed area errors lands in [`data/validation.md`](data/validation.md), refreshed every ingest.
+Every ingest compares each tracked fire's cumulative footprint (the union of its whole perimeter history, in an equal-area projection) against the overlapping official WFIGS perimeter, and records the result in a season-to-date table: [`data/validation.md`](data/validation.md). Each incident is scored at its most completely observed moment, the comparison where Emberline's tracked footprint was largest. That selection uses only Emberline's own area, never agreement with the official shape, so it can't cherry-pick good results.
 
-Current numbers from live data: **median absolute area error of ~40% against official perimeters for fires ≥ 1,000 ha**, with well-observed fires much tighter (Three Queens +2%, Deer Creek +3%); the exact figure refreshes with every ingest in [`data/validation.md`](data/validation.md). Two known biases dominate the tail, and both are physics rather than bugs: below ~1,000 ha the 375 m sensor footprint inflates small burns, and fires that were already burning before the tracking window opened have unobserved history and read low. The hull concavity parameter was tuned by sweeping it against these official perimeters: ratio 0.25 scores 40% median error, while a near-convex 0.7 scores 48%.
+**Season to date: median absolute area error of 39% across 30 incidents ≥ 1,000 ha**, with well-tracked fires much tighter (Three Queens +2%, Deer Creek +3%). The hull concavity parameter was tuned against these official perimeters: a ratio of 0.25 scores 40% median error, while a near-convex 0.7 scores 48%.
+
+Known limitations, in order of impact:
+- **Tracking gaps.** A fire with no detections for more than 3 days (smoke, cloud, or a smoldering phase) retires its ID; when it flares back up it gets a new ID whose footprint starts from scratch. This, not the hull, drives most large under-reads.
+- **Sensor footprint.** Below about 1,000 ha, the 375 m pixel size inflates small burns.
+- **Pre-existing fires.** A fire already burning before tracking began has unobserved history and reads low.
 
 ## Architecture
 
