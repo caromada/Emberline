@@ -73,7 +73,7 @@ The repo ships with live data (refreshed every 3 h by the ingest workflow), and 
 
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -r pipeline/requirements.txt
-cd pipeline && ../.venv/bin/pytest          # 21 tests
+cd pipeline && ../.venv/bin/pytest          # 25 tests
 cd .. && make demo                          # regenerate demo data
 cd web && npm install && npm run dev        # http://localhost:3000
 ```
