@@ -25,7 +25,7 @@ Official wildfire perimeters lag by hours to days because someone has to draw th
 
 ## Accuracy vs. official perimeters
 
-Every ingest compares each tracked fire's cumulative footprint (the union of its whole perimeter history, in an equal-area projection) against the overlapping official WFIGS perimeter, and records the result in a season-to-date table: [`data/validation.md`](data/validation.md). Each incident is scored at its most completely observed moment, the comparison where Emberline's tracked footprint was largest. That selection uses only Emberline's own area, never agreement with the official shape, so it can't cherry-pick good results.
+Every ingest compares each tracked fire's cumulative footprint (the union of its whole perimeter history, in an equal-area projection) against the overlapping official WFIGS perimeter, and records the result in a season-to-date table: [`validation.md` on the `data` branch](https://github.com/caromada/Emberline/blob/data/validation.md). Each incident is scored at its most completely observed moment, the comparison where Emberline's tracked footprint was largest. That selection uses only Emberline's own area, never agreement with the official shape, so it can't cherry-pick good results.
 
 **Season to date: median absolute area error of 39% across 30 incidents ≥ 1,000 ha**, with well-tracked fires much tighter (Three Queens +2%, Deer Creek +3%). The hull concavity parameter was tuned against these official perimeters: a ratio of 0.25 scores 40% median error, while a near-convex 0.7 scores 48%.
 
@@ -51,7 +51,7 @@ GitHub Actions cron (every 3 h)
     compute area, 24 h growth, centroid displacement, bearing
         │
         ▼
-  data/ — per-day GeoJSON snapshots + fire registry (committed each run)
+  data branch — per-day GeoJSON snapshots + fire registry (one fresh commit per run)
   PostGIS mirror (optional, DATABASE_URL)
         │
         ▼
@@ -69,12 +69,12 @@ GitHub Actions cron (every 3 h)
 
 ## Run it locally
 
-The repo ships with live data (refreshed every 3 h by the ingest workflow), and the frontend needs zero credentials. Without a FIRMS key you can still exercise the whole pipeline offline — `make demo` synthesizes an 8-day fire season and runs it through every stage:
+The live dataset lives on the `data` branch (refreshed every 3 h by the ingest workflow); `make data` pulls it down, and the frontend needs zero credentials. Without a FIRMS key you can still exercise the whole pipeline offline: `make demo` synthesizes an 8-day fire season and runs it through every stage.
 
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -r pipeline/requirements.txt
 cd pipeline && ../.venv/bin/pytest          # 25 tests
-cd .. && make demo                          # regenerate demo data
+cd .. && make data                          # live dataset (or: make demo)
 cd web && npm install && npm run dev        # http://localhost:3000
 ```
 
@@ -83,13 +83,12 @@ cd web && npm install && npm run dev        # http://localhost:3000
 1. Get a free FIRMS map key: https://firms.modaps.eosdis.nasa.gov/api/area/
 2. Add a repo secret `FIRMS_MAP_KEY` (and optionally `DATABASE_URL` for the PostGIS mirror — schema in `pipeline/schema.sql`)
 3. In repo **Settings → Pages**, set the source to **GitHub Actions**
-4. The `deploy` workflow publishes `web/` to GitHub Pages on every push; the `ingest` workflow runs every 3 h, fetches the latest detections, commits refreshed `data/`, and re-triggers the deploy
+4. The `deploy` workflow publishes `web/` to GitHub Pages on every push; the `ingest` workflow runs every 3 h, fetches the latest detections, publishes the refreshed dataset to the `data` branch as a single fresh commit (so it never accumulates history), and re-triggers the deploy
 
 ## Repository layout
 
 ```
 pipeline/   Python ingest: clustering, hulls, identity, metrics (fully unit-tested)
-data/       per-day GeoJSON snapshots + fire registry (the API surface)
 web/        Next.js + MapLibre + deck.gl frontend
 .github/    3-hour ingest cron
 ```

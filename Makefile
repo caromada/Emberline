@@ -1,4 +1,4 @@
-.PHONY: test demo dev build validate
+.PHONY: test demo dev build validate data
 
 test:
 	cd pipeline && ../.venv/bin/pytest -q
@@ -18,3 +18,8 @@ dev:
 
 build:
 	cd web && npm run build
+
+# fetch the live dataset CI publishes to the `data` branch
+data:
+	rm -rf data
+	git clone --quiet --depth 1 --branch data https://github.com/caromada/Emberline.git data

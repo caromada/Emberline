@@ -7,3 +7,6 @@ web/.next/
 web/public/data/
 .env
 .DS_Store
+
+# live data is published to the `data` branch by CI (see Makefile: make data)
+data/

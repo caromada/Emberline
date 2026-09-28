@@ -17,6 +17,11 @@ jobs:
     if: ${{ vars.INGEST_ENABLED != 'false' }}
     steps:
       - uses: actions/checkout@v4
+      # live data lives on its own branch so main's history holds only code
+      - uses: actions/checkout@v4
+        with:
+          ref: data
+          path: data
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -31,10 +36,14 @@ jobs:
           python -m emberline.run --data-dir ../data --day-range 5
           python scripts/validate_nifc.py --data-dir ../data || true
           python -c "from emberline.db import sync; sync('../data')"
-      - name: Commit refreshed data
+      - name: Publish refreshed data
+        # replace the data branch with a single fresh commit every run so it
+        # never accumulates history (state.json alone is ~8 MB per version)
+        working-directory: data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data
-          git diff --cached --quiet || git commit -m "data: ingest $(date -u +'%Y-%m-%dT%H:%MZ')"
-          git push
+          git checkout -q --orphan snapshot
+          git add -A
+          git commit -q -m "data: snapshot $(date -u +'%Y-%m-%dT%H:%MZ')"
+          git push -q --force origin snapshot:data
