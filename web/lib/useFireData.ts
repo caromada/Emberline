@@ -24,35 +24,59 @@ export interface FireData {
   names: Record<string, string>;
 }
 
-// Loads the whole (small) dataset up front so the time scrub never waits on IO.
+// Days of history the map exposes on the time slider.
+const WINDOW_DAYS = 14;
+
+// Loads the newest day first so the map is usable almost immediately, then
+// streams the rest of the window in the background (oldest day last).
 export function useFireData(): FireData | null {
   const [data, setData] = useState<FireData | null>(null);
   useEffect(() => {
     let live = true;
     (async () => {
-      const index = await getJson<DataIndex>("index.json");
-      const fires = await getJson<FiresSummary>("fires.json");
-      if (!index || !fires) return;
-      const per: Record<string, FeatureCollection> = {};
-      const det: Record<string, FeatureCollection> = {};
-      await Promise.all(
-        index.dates.map(async (d) => {
-          const [p, q] = await Promise.all([
-            getJson<FeatureCollection>(`perimeters/${d}.geojson`),
-            getJson<FeatureCollection>(`detections/${d}.geojson`),
-          ]);
-          if (p) per[d] = p;
-          if (q) det[d] = q;
-        })
-      );
-      const last = index.dates[index.dates.length - 1];
-      const [nifc, names] = await Promise.all([
-        getJson<FeatureCollection>(`nifc/${last}.geojson`),
+      const [rawIndex, fires, names] = await Promise.all([
+        getJson<DataIndex>("index.json"),
+        getJson<FiresSummary>("fires.json"),
         getJson<Record<string, string>>("names.json"),
       ]);
-      if (live)
-        setData({ index, fires, perimeters: per, detections: det, nifc,
-                  names: names ?? {} });
+      if (!rawIndex || !fires || !rawIndex.dates.length) return;
+      const index = { ...rawIndex, dates: rawIndex.dates.slice(-WINDOW_DAYS) };
+      const newest = index.dates[index.dates.length - 1];
+
+      const loadDay = (d: string) =>
+        Promise.all([
+          getJson<FeatureCollection>(`perimeters/${d}.geojson`),
+          getJson<FeatureCollection>(`detections/${d}.geojson`),
+        ]);
+
+      const [p0, q0] = await loadDay(newest);
+      if (!live) return;
+      setData({
+        index,
+        fires,
+        perimeters: p0 ? { [newest]: p0 } : {},
+        detections: q0 ? { [newest]: q0 } : {},
+        nifc: null,
+        names: names ?? {},
+      });
+
+      getJson<FeatureCollection>(`nifc/${newest}.geojson`).then((nifc) => {
+        if (live && nifc) setData((prev) => (prev ? { ...prev, nifc } : prev));
+      });
+
+      for (const d of index.dates.slice(0, -1).reverse()) {
+        const [p, q] = await loadDay(d);
+        if (!live) return;
+        setData((prev) =>
+          prev
+            ? {
+                ...prev,
+                perimeters: p ? { ...prev.perimeters, [d]: p } : prev.perimeters,
+                detections: q ? { ...prev.detections, [d]: q } : prev.detections,
+              }
+            : prev
+        );
+      }
     })();
     return () => {
       live = false;

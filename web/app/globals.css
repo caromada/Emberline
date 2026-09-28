@@ -9,6 +9,9 @@
   --hairline: rgba(242, 232, 201, 0.18);
   --panel: rgba(13, 18, 30, 0.93);
   --panel-solid: #151c2d;
+  --font-display: "Archivo Narrow";
+  --font-body: "Inter";
+  --font-mono: "JetBrains Mono";
 }
 
 * {
