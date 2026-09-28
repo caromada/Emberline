@@ -1,5 +1,7 @@
 """Orchestrator: one call per (config, date) — from cron or backfill."""
 import argparse
+import json
+import pathlib
 from dataclasses import replace
 
 import pandas as pd
@@ -101,6 +103,7 @@ def run_for_date(cfg: Config, day: str, detections: pd.DataFrame) -> None:
     state["records"] = [vars(r) for r in result.records]
     state["next_serial"] = result.next_serial
     state["events"].extend(list(e) for e in result.events)
+    prune_state(state, day, cfg.retire_history_days, cfg.keep_perimeter_days)
 
     store.write_geojson("perimeters", day, perim_features)
     store.write_geojson("detections", day, det_features)
@@ -108,6 +111,29 @@ def run_for_date(cfg: Config, day: str, detections: pd.DataFrame) -> None:
     store.write_fires_summary(sorted(active, key=lambda f: f["area_ha"], reverse=True))
     store.save_state(state)
     store.update_index(day)
+    store.prune(cfg.keep_perimeter_days, cfg.static_window_days)
+
+
+def prune_state(state: dict, day: str, retire_days: int, forget_days: int) -> None:
+    """Keep state.json proportional to *active* fires, not every fire ever seen.
+
+    Geometry is only needed to match a fire again (it can't after max_gap_days)
+    and for the cumulative footprint of live fires. Retired and merged fires
+    lose their geometry; records are forgotten entirely after forget_days.
+    next_serial is untouched, so fire IDs are never reused.
+    """
+    from datetime import date as _date
+
+    today = _date.fromisoformat(day)
+
+    def age(d: str) -> int:
+        return (today - _date.fromisoformat(d)).days
+
+    state["records"] = [r for r in state["records"] if age(r["last_seen"]) <= forget_days]
+    live = {r["fire_id"] for r in state["records"]
+            if r["merged_into"] is None and age(r["last_seen"]) <= retire_days}
+    state["history"] = {fid: h for fid, h in state["history"].items() if fid in live}
+    state["events"] = [e for e in state["events"] if age(e[3]) <= forget_days]
 
 
 def main() -> None:
@@ -133,7 +159,17 @@ def main() -> None:
     if df.empty:
         raise SystemExit("no detections returned")
     dates = sorted(df["acq_date"].unique())
-    targets = dates if args.backfill else [args.date or dates[-1]]
+    if args.backfill:
+        targets = dates
+    elif args.date:
+        targets = [args.date]
+    else:
+        # re-run the last date we processed as well as anything newer: the
+        # previous run saw that UTC day only partially (later satellite passes
+        # land after it), so the first run past midnight finalizes it
+        idx_path = pathlib.Path(cfg.data_dir) / "index.json"
+        last = json.loads(idx_path.read_text())["dates"][-1] if idx_path.exists() else None
+        targets = [d for d in dates if last is None or d >= last] or [dates[-1]]
     for day in targets:
         run_for_date(cfg, day, df)
         print(f"ingested {day}")

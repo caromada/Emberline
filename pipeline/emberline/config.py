@@ -22,6 +22,8 @@ class Config:
     static_window_days: int = 90
     static_day_fraction: float = 0.60  # >60% of window days burning => industrial source
     cell_size_m: float = 375.0
+    keep_perimeter_days: int = 30      # daily perimeter files kept in data/ (map window)
+    retire_history_days: int = 7       # drop stored geometry once a fire is this stale
     data_dir: str = "data"
 
     @classmethod

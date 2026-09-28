@@ -68,6 +68,25 @@ class LocalStore:
         idx["updated_at"] = _now()
         self._write(p, idx)
 
+    def prune(self, keep_perimeter_days: int, keep_detection_days: int) -> None:
+        """Bound data/ so the repo and the page payload stop growing forever.
+
+        Detections are kept for the whole static-mask window (they are small);
+        perimeter files only for the map's window. index.json lists exactly the
+        dates that still have perimeter files.
+        """
+        for kind, keep in (("perimeters", keep_perimeter_days),
+                           ("detections", keep_detection_days)):
+            files = sorted((self.root / kind).glob("*.geojson"))
+            for old in files[:-keep] if len(files) > keep else []:
+                old.unlink()
+        p = self.root / "index.json"
+        if p.exists():
+            idx = json.loads(p.read_text())
+            kept = {f.stem for f in (self.root / "perimeters").glob("*.geojson")}
+            idx["dates"] = [d for d in idx["dates"] if d in kept]
+            self._write(p, idx)
+
     @staticmethod
     def _write(path: pathlib.Path, obj: dict) -> None:
         tmp = path.with_suffix(path.suffix + ".tmp")
