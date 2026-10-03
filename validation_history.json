@@ -1,0 +1,682 @@
+{
+ "208": {
+  "date": "2026-09-17",
+  "err": 6.0,
+  "ids": "F3518",
+  "iou": 0.39,
+  "nifc_ha": 42.0,
+  "our_ha": 45.0
+ },
+ "Alexander Trail Fire": {
+  "date": "2026-08-30",
+  "err": 19.0,
+  "ids": "F1284",
+  "iou": 0.59,
+  "nifc_ha": 506.0,
+  "our_ha": 601.0
+ },
+ "Anderson Butte Road MM4": {
+  "date": "2026-09-22",
+  "err": 116.0,
+  "ids": "F3994",
+  "iou": 0.34,
+  "nifc_ha": 31.0,
+  "our_ha": 66.0
+ },
+ "Atoka Lake": {
+  "date": "2026-09-15",
+  "err": -29.0,
+  "ids": "F3238",
+  "iou": 0.36,
+  "nifc_ha": 294.0,
+  "our_ha": 209.0
+ },
+ "Austin": {
+  "date": "2026-09-02",
+  "err": -5.0,
+  "ids": "F0314+F0138",
+  "iou": 0.53,
+  "nifc_ha": 5103.0,
+  "our_ha": 4842.0
+ },
+ "Black Kettle": {
+  "date": "2026-09-15",
+  "err": 49.0,
+  "ids": "F3176",
+  "iou": 0.62,
+  "nifc_ha": 475.0,
+  "our_ha": 710.0
+ },
+ "Blue Eagle": {
+  "date": "2026-08-28",
+  "err": 39.0,
+  "ids": "F0760+F0926",
+  "iou": 0.68,
+  "nifc_ha": 3651.0,
+  "our_ha": 5091.0
+ },
+ "Blue Ridge - Garfield": {
+  "date": "2026-09-04",
+  "err": 186.0,
+  "ids": "F1954",
+  "iou": 0.28,
+  "nifc_ha": 10.0,
+  "our_ha": 30.0
+ },
+ "Border": {
+  "date": "2026-08-30",
+  "err": 268.0,
+  "ids": "F1062",
+  "iou": 0.27,
+  "nifc_ha": 17.0,
+  "our_ha": 64.0
+ },
+ "Border 2": {
+  "date": "2026-08-28",
+  "err": -91.0,
+  "ids": "F0543+F0898",
+  "iou": 0.06,
+  "nifc_ha": 6437.0,
+  "our_ha": 577.0
+ },
+ "Buckhorn": {
+  "date": "2026-09-12",
+  "err": 323.0,
+  "ids": "F2807",
+  "iou": 0.24,
+  "nifc_ha": 65.0,
+  "our_ha": 277.0
+ },
+ "Bull": {
+  "date": "2026-10-02",
+  "err": 238.6,
+  "ids": "F5782",
+  "iou": 0.294,
+  "nifc_ha": 515.5,
+  "our_ha": 1745.3
+ },
+ "Bunker Fire": {
+  "date": "2026-09-15",
+  "err": -55.0,
+  "ids": "F3233",
+  "iou": 0.31,
+  "nifc_ha": 1151.0,
+  "our_ha": 521.0
+ },
+ "Camp Creek": {
+  "date": "2026-08-30",
+  "err": 24.0,
+  "ids": "F0166+F0482",
+  "iou": 0.72,
+  "nifc_ha": 3843.0,
+  "our_ha": 4755.0
+ },
+ "Campwood": {
+  "date": "2026-08-29",
+  "err": -16.0,
+  "ids": "F0396",
+  "iou": 0.63,
+  "nifc_ha": 492.0,
+  "our_ha": 412.0
+ },
+ "Cooper": {
+  "date": "2026-08-28",
+  "err": 311.0,
+  "ids": "F0634",
+  "iou": 0.22,
+  "nifc_ha": 72.0,
+  "our_ha": 294.0
+ },
+ "Cow Camp": {
+  "date": "2026-09-04",
+  "err": 68.0,
+  "ids": "F1983",
+  "iou": 0.37,
+  "nifc_ha": 88.0,
+  "our_ha": 148.0
+ },
+ "Crooked": {
+  "date": "2026-09-02",
+  "err": 11.0,
+  "ids": "F0134",
+  "iou": 0.74,
+  "nifc_ha": 3948.0,
+  "our_ha": 4401.0
+ },
+ "DOME": {
+  "date": "2026-09-18",
+  "err": 316.0,
+  "ids": "F3397",
+  "iou": 0.24,
+  "nifc_ha": 476.0,
+  "our_ha": 1980.0
+ },
+ "Deer Creek": {
+  "date": "2026-08-29",
+  "err": 10.0,
+  "ids": "F0176",
+  "iou": 0.56,
+  "nifc_ha": 445.0,
+  "our_ha": 489.0
+ },
+ "Dome": {
+  "date": "2026-10-03",
+  "err": 69.5,
+  "ids": "F3397",
+  "iou": 0.59,
+  "nifc_ha": 2694.0,
+  "our_ha": 4565.7
+ },
+ "Drums": {
+  "date": "2026-09-17",
+  "err": 275.0,
+  "ids": "F3461",
+  "iou": 0.26,
+  "nifc_ha": 6.0,
+  "our_ha": 23.0
+ },
+ "Dry River": {
+  "date": "2026-09-17",
+  "err": 58.0,
+  "ids": "F3385",
+  "iou": 0.47,
+  "nifc_ha": 2079.0,
+  "our_ha": 3286.0
+ },
+ "Dudley": {
+  "date": "2026-09-03",
+  "err": 85.0,
+  "ids": "F0887",
+  "iou": 0.54,
+  "nifc_ha": 318.0,
+  "our_ha": 588.0
+ },
+ "FLORISTON": {
+  "date": "2026-09-16",
+  "err": 301.0,
+  "ids": "F3465",
+  "iou": 0.24,
+  "nifc_ha": 120.0,
+  "our_ha": 483.0
+ },
+ "Floriston": {
+  "date": "2026-09-17",
+  "err": 100.0,
+  "ids": "F3465",
+  "iou": 0.49,
+  "nifc_ha": 248.0,
+  "our_ha": 495.0
+ },
+ "Four Corners": {
+  "date": "2026-09-09",
+  "err": -50.0,
+  "ids": "F2496",
+  "iou": 0.37,
+  "nifc_ha": 442.0,
+  "our_ha": 221.0
+ },
+ "GRACEMONT": {
+  "date": "2026-09-14",
+  "err": 67.0,
+  "ids": "F3082",
+  "iou": 0.36,
+  "nifc_ha": 543.0,
+  "our_ha": 906.0
+ },
+ "Gibby": {
+  "date": "2026-09-03",
+  "err": 29.0,
+  "ids": "F1826",
+  "iou": 0.2,
+  "nifc_ha": 87.0,
+  "our_ha": 113.0
+ },
+ "Goat": {
+  "date": "2026-09-01",
+  "err": 90.0,
+  "ids": "F0226+F1137",
+  "iou": 0.53,
+  "nifc_ha": 298.0,
+  "our_ha": 565.0
+ },
+ "Gracemont": {
+  "date": "2026-09-15",
+  "err": 3.0,
+  "ids": "F3082",
+  "iou": 0.67,
+  "nifc_ha": 934.0,
+  "our_ha": 960.0
+ },
+ "Granger": {
+  "date": "2026-08-30",
+  "err": 11.0,
+  "ids": "F1037",
+  "iou": 0.52,
+  "nifc_ha": 100.0,
+  "our_ha": 112.0
+ },
+ "Grotto": {
+  "date": "2026-09-02",
+  "err": 96.0,
+  "ids": "F0159+F0979+F1057",
+  "iou": 0.32,
+  "nifc_ha": 1286.0,
+  "our_ha": 2517.0
+ },
+ "Hatch Grande HB 1498 Request": {
+  "date": "2026-09-30",
+  "err": -72.1,
+  "ids": "F5400+F5401",
+  "iou": 0.135,
+  "nifc_ha": 3651.6,
+  "our_ha": 1018.4
+ },
+ "Horse Canyon": {
+  "date": "2026-08-28",
+  "err": 161.0,
+  "ids": "F0906",
+  "iou": 0.37,
+  "nifc_ha": 12.0,
+  "our_ha": 32.0
+ },
+ "Hydra": {
+  "date": "2026-09-17",
+  "err": -21.0,
+  "ids": "F3388",
+  "iou": 0.5,
+  "nifc_ha": 381.0,
+  "our_ha": 301.0
+ },
+ "King": {
+  "date": "2026-09-02",
+  "err": 84.0,
+  "ids": "F0167",
+  "iou": 0.54,
+  "nifc_ha": 1073.0,
+  "our_ha": 1970.0
+ },
+ "Little Giant": {
+  "date": "2026-08-28",
+  "err": -77.0,
+  "ids": "F0168+F0169+F0890",
+  "iou": 0.12,
+  "nifc_ha": 63312.0,
+  "our_ha": 14785.0
+ },
+ "Lucas": {
+  "date": "2026-09-12",
+  "err": 68.0,
+  "ids": "F2778",
+  "iou": 0.59,
+  "nifc_ha": 1406.0,
+  "our_ha": 2359.0
+ },
+ "Luna": {
+  "date": "2026-09-23",
+  "err": -70.0,
+  "ids": "F3987+F4127+F4128",
+  "iou": 0.15,
+  "nifc_ha": 3461.0,
+  "our_ha": 1023.0
+ },
+ "MEERS": {
+  "date": "2026-09-10",
+  "err": -44.0,
+  "ids": "F2504",
+  "iou": 0.43,
+  "nifc_ha": 370.0,
+  "our_ha": 207.0
+ },
+ "Marmot Peak": {
+  "date": "2026-09-25",
+  "err": 292.0,
+  "ids": "F4126",
+  "iou": 0.26,
+  "nifc_ha": 30.0,
+  "our_ha": 117.0
+ },
+ "McCully": {
+  "date": "2026-09-01",
+  "err": 36.0,
+  "ids": "F0136+F1052",
+  "iou": 0.73,
+  "nifc_ha": 5076.0,
+  "our_ha": 6909.0
+ },
+ "Mogote Ridge": {
+  "date": "2026-08-30",
+  "err": 233.0,
+  "ids": "F0807",
+  "iou": 0.26,
+  "nifc_ha": 45.0,
+  "our_ha": 151.0
+ },
+ "Moonshine": {
+  "date": "2026-09-13",
+  "err": 14.0,
+  "ids": "F2412",
+  "iou": 0.69,
+  "nifc_ha": 2902.0,
+  "our_ha": 3308.0
+ },
+ "Moose Mountain": {
+  "date": "2026-08-29",
+  "err": -16.0,
+  "ids": "F0163+F0162",
+  "iou": 0.39,
+  "nifc_ha": 2159.0,
+  "our_ha": 1824.0
+ },
+ "Nature Grove": {
+  "date": "2026-09-02",
+  "err": 102.0,
+  "ids": "F0296",
+  "iou": 0.5,
+  "nifc_ha": 516.0,
+  "our_ha": 1039.0
+ },
+ "Needles": {
+  "date": "2026-09-06",
+  "err": -29.0,
+  "ids": "F2050",
+  "iou": 0.56,
+  "nifc_ha": 2435.0,
+  "our_ha": 1720.0
+ },
+ "PIUTE": {
+  "date": "2026-10-03",
+  "err": 101.1,
+  "ids": "F5722",
+  "iou": 0.414,
+  "nifc_ha": 73.0,
+  "our_ha": 146.9
+ },
+ "PLASKETT": {
+  "date": "2026-08-30",
+  "err": -6.0,
+  "ids": "F1197",
+  "iou": 0.35,
+  "nifc_ha": 3335.0,
+  "our_ha": 3127.0
+ },
+ "Paddy Creek": {
+  "date": "2026-08-29",
+  "err": 25.0,
+  "ids": "F0530",
+  "iou": 0.73,
+  "nifc_ha": 270.0,
+  "our_ha": 337.0
+ },
+ "Paradise": {
+  "date": "2026-09-01",
+  "err": -10.0,
+  "ids": "F0144+F1591+F0149",
+  "iou": 0.2,
+  "nifc_ha": 3882.0,
+  "our_ha": 3481.0
+ },
+ "Parker Lake": {
+  "date": "2026-09-03",
+  "err": 144.0,
+  "ids": "F0312",
+  "iou": 0.41,
+  "nifc_ha": 579.0,
+  "our_ha": 1413.0
+ },
+ "Pigtail": {
+  "date": "2026-09-01",
+  "err": 512.0,
+  "ids": "F1297",
+  "iou": 0.16,
+  "nifc_ha": 15.0,
+  "our_ha": 91.0
+ },
+ "Plaskett": {
+  "date": "2026-09-01",
+  "err": 1.0,
+  "ids": "F1434+F1435+F1436",
+  "iou": 0.67,
+  "nifc_ha": 10819.0,
+  "our_ha": 10942.0
+ },
+ "Porcupine": {
+  "date": "2026-08-28",
+  "err": 256.0,
+  "ids": "F0742",
+  "iou": 0.24,
+  "nifc_ha": 71.0,
+  "our_ha": 252.0
+ },
+ "Powell": {
+  "date": "2026-09-15",
+  "err": 10.0,
+  "ids": "F3248",
+  "iou": 0.12,
+  "nifc_ha": 55.0,
+  "our_ha": 60.0
+ },
+ "Rafter 4B": {
+  "date": "2026-09-27",
+  "err": 7.0,
+  "ids": "F4767",
+  "iou": 0.65,
+  "nifc_ha": 868.0,
+  "our_ha": 930.0
+ },
+ "Railroad South": {
+  "date": "2026-08-30",
+  "err": -81.0,
+  "ids": "F1295",
+  "iou": 0.13,
+  "nifc_ha": 213.0,
+  "our_ha": 41.0
+ },
+ "Ranger Academy Burn 1 RX": {
+  "date": "2026-09-24",
+  "err": 212.0,
+  "ids": "F4430",
+  "iou": 0.09,
+  "nifc_ha": 8.0,
+  "our_ha": 26.0
+ },
+ "SW3": {
+  "date": "2026-09-05",
+  "err": 316.0,
+  "ids": "F1878",
+  "iou": 0.22,
+  "nifc_ha": 26.0,
+  "our_ha": 107.0
+ },
+ "Scimitar": {
+  "date": "2026-09-01",
+  "err": 148.0,
+  "ids": "F1187",
+  "iou": 0.32,
+  "nifc_ha": 135.0,
+  "our_ha": 335.0
+ },
+ "Silver": {
+  "date": "2026-08-30",
+  "err": 74.0,
+  "ids": "F0216",
+  "iou": 0.58,
+  "nifc_ha": 981.0,
+  "our_ha": 1705.0
+ },
+ "Silvertip": {
+  "date": "2026-08-30",
+  "err": -80.0,
+  "ids": "F0735+F0488",
+  "iou": 0.08,
+  "nifc_ha": 2891.0,
+  "our_ha": 568.0
+ },
+ "Sinlahekin": {
+  "date": "2026-08-29",
+  "err": -86.0,
+  "ids": "F0494+F0743+F0540",
+  "iou": 0.1,
+  "nifc_ha": 66990.0,
+  "our_ha": 9300.0
+ },
+ "Sisi": {
+  "date": "2026-09-12",
+  "err": -1.0,
+  "ids": "F1060",
+  "iou": 0.5,
+  "nifc_ha": 1292.0,
+  "our_ha": 1284.0
+ },
+ "Slough Canyon": {
+  "date": "2026-08-29",
+  "err": -39.0,
+  "ids": "F0188+F0905",
+  "iou": 0.25,
+  "nifc_ha": 1889.0,
+  "our_ha": 1147.0
+ },
+ "Smoke 753- Rough Draw": {
+  "date": "2026-08-30",
+  "err": 274.0,
+  "ids": "F1324",
+  "iou": 0.14,
+  "nifc_ha": 10.0,
+  "our_ha": 38.0
+ },
+ "Snow": {
+  "date": "2026-09-04",
+  "err": 1.0,
+  "ids": "F1876+F1981",
+  "iou": 0.58,
+  "nifc_ha": 4975.0,
+  "our_ha": 5037.0
+ },
+ "Star Lake": {
+  "date": "2026-09-13",
+  "err": -5.0,
+  "ids": "F2897",
+  "iou": 0.44,
+  "nifc_ha": 457.0,
+  "our_ha": 434.0
+ },
+ "Steele": {
+  "date": "2026-09-10",
+  "err": 332.0,
+  "ids": "F2624",
+  "iou": 0.23,
+  "nifc_ha": 18.0,
+  "our_ha": 78.0
+ },
+ "Swiss Roll": {
+  "date": "2026-09-14",
+  "err": 86.0,
+  "ids": "F2697",
+  "iou": 0.53,
+  "nifc_ha": 315.0,
+  "our_ha": 584.0
+ },
+ "Sycan": {
+  "date": "2026-09-13",
+  "err": -91.0,
+  "ids": "F2917",
+  "iou": 0.05,
+  "nifc_ha": 790.0,
+  "our_ha": 68.0
+ },
+ "Three Queens": {
+  "date": "2026-08-28",
+  "err": 12.0,
+  "ids": "F0165+F0734",
+  "iou": 0.37,
+  "nifc_ha": 3140.0,
+  "our_ha": 3519.0
+ },
+ "Thunder Creek": {
+  "date": "2026-08-28",
+  "err": 140.0,
+  "ids": "F0281",
+  "iou": 0.42,
+  "nifc_ha": 262.0,
+  "our_ha": 629.0
+ },
+ "Timber": {
+  "date": "2026-08-28",
+  "err": -12.0,
+  "ids": "F0918+F0124+F0919",
+  "iou": 0.4,
+  "nifc_ha": 7210.0,
+  "our_ha": 6350.0
+ },
+ "Tom Creek": {
+  "date": "2026-08-28",
+  "err": -82.0,
+  "ids": "F0761",
+  "iou": 0.14,
+  "nifc_ha": 2020.0,
+  "our_ha": 372.0
+ },
+ "Upper Smith": {
+  "date": "2026-08-28",
+  "err": -83.0,
+  "ids": "F0227",
+  "iou": 0.1,
+  "nifc_ha": 1852.0,
+  "our_ha": 322.0
+ },
+ "Upton 2": {
+  "date": "2026-09-13",
+  "err": 82.0,
+  "ids": "F2995",
+  "iou": 0.51,
+  "nifc_ha": 52.0,
+  "our_ha": 94.0
+ },
+ "Upton 3": {
+  "date": "2026-09-16",
+  "err": 27.0,
+  "ids": "F3193",
+  "iou": 0.66,
+  "nifc_ha": 159.0,
+  "our_ha": 203.0
+ },
+ "West Fork": {
+  "date": "2026-08-30",
+  "err": -43.0,
+  "ids": "F1212",
+  "iou": 0.27,
+  "nifc_ha": 248.0,
+  "our_ha": 141.0
+ },
+ "Whiskey": {
+  "date": "2026-09-01",
+  "err": 152.0,
+  "ids": "F0496",
+  "iou": 0.34,
+  "nifc_ha": 150.0,
+  "our_ha": 377.0
+ },
+ "White Oak": {
+  "date": "2026-08-29",
+  "err": 82.0,
+  "ids": "F1164",
+  "iou": 0.5,
+  "nifc_ha": 50.0,
+  "our_ha": 90.0
+ },
+ "Wildhorse": {
+  "date": "2026-08-28",
+  "err": -76.0,
+  "ids": "F0911+F0912+F0913",
+  "iou": 0.06,
+  "nifc_ha": 30032.0,
+  "our_ha": 7062.0
+ },
+ "Wolf Creek": {
+  "date": "2026-09-02",
+  "err": 104.0,
+  "ids": "F1269+F1399",
+  "iou": 0.09,
+  "nifc_ha": 270.0,
+  "our_ha": 550.0
+ }
+}
